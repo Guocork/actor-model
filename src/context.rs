@@ -6,9 +6,9 @@ use crate::{Address, EnvelopProxy, Envelope, Service};
 
 
 pub struct Context<S> {
-    sender: UnboundedSender<Envelope<S>>,
-    receiver: UnboundedReceiver<Envelope<S>>,
-    pub(crate) paused: bool,
+    sender: UnboundedSender<Envelope<S>>,  // 一个未绑定的发送者，用于发送 Envelope<S> 类型的消息。
+    receiver: UnboundedReceiver<Envelope<S>>, // 一个未绑定的接收者，用于接收 Envelope<S> 类型的消息。
+    pub(crate) paused: bool,  // 一个布尔值，用于指示服务是否暂停。
 }
 
 impl<S> Default for Context<S> {
@@ -20,6 +20,7 @@ impl<S> Default for Context<S> {
 impl<S> Context<S> {
 
     pub fn new() -> Self {
+        // 创建一个未绑定的通道
         let (sender, receiver) = unbounded_channel();
 
         Self {
@@ -36,12 +37,12 @@ impl<S> Context<S> {
         }
     }
 
-    
+    // 定义一个公有的方法 pause，用于暂停服务。
     pub fn pause(&mut self) {
         self.paused = true;
     }
 
-   
+   // 定义一个公有的方法 stop，用于关闭接收者通道。
     pub fn stop(&mut self) {
         self.receiver.close()
     }
