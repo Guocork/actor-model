@@ -18,7 +18,10 @@ impl<S> Clone for Address<S> {
 }
 
 impl<S> Address<S> {
-    // 判断sender是否关闭
+    // 检查 actor 是否已经停止接收消息
+    //与 UnboundedSender 对应的 UnboundedReceiver 端被关闭，这时 is_closed 会返回 true。
+    //如果 UnboundedSender 被显式地关闭了，这通常不会在正常的 actor 模型实现中发生，因为发送端通常保持打开状态直到程序结束。
+    // 对应context中的 stop() 方法
     pub fn is_stop(&self) -> bool {
         self.sender.is_closed()
     }
@@ -29,6 +32,7 @@ where
     S: Service,
 {
 
+    // 发送了一个需要响应的消息
     pub async fn call<M>(&self, message: M) -> Result<M::Result>
     where
         M: Message + Send + 'static,
@@ -49,6 +53,7 @@ where
     }
 
 
+    // 发送了一个不需要响应的消息
     pub fn send<M>(&self, message: M) -> Result<()>
     where
         M: Message + Send + 'static,

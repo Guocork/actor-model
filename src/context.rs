@@ -8,7 +8,7 @@ use crate::{Address, EnvelopProxy, Envelope, Service};
 pub struct Context<S> {
     sender: UnboundedSender<Envelope<S>>,  // 一个未绑定的发送者，用于发送 Envelope<S> 类型的消息。
     receiver: UnboundedReceiver<Envelope<S>>, // 一个未绑定的接收者，用于接收 Envelope<S> 类型的消息。
-    pub(crate) paused: bool,  // 一个布尔值，用于指示服务是否暂停。
+    pub(crate) paused: bool,  // 一个布尔值，用于指示服务是否暂停。 paused 状态是指 actor 是否应该暂停处理接收到的消息 不会影响发送端是否打开的状态。
 }
 
 impl<S> Default for Context<S> {
