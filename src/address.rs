@@ -1,4 +1,4 @@
-/// 并通过 Address 进行消息传递。
+/// 代表一个 actor 的地址，可以通过这个地址向 actor 发送消息或调用它的方法。
 
 use tokio::sync::{mpsc::UnboundedSender, oneshot};
 

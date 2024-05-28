@@ -1,4 +1,4 @@
-/// 了解如何定义和启动一个服务。
+///一个 trait，定义了 actor 的生命周期方法，如启动、停止等。
 
 use async_trait::async_trait;
 

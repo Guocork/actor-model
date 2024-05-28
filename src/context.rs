@@ -1,4 +1,4 @@
-/// actor 都有自己的 Context 来管理其生命周期和消息处理
+/// 包含 actor 的消息发送者（UnboundedSender）和接收者（UnboundedReceiver），以及一个控制 actor 是否暂停的标志位。
 
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
 
@@ -19,6 +19,7 @@ impl<S> Default for Context<S> {
 
 impl<S> Context<S> {
 
+    // 初始化一个context 实例
     pub fn new() -> Self {
         // 创建一个未绑定的通道
         let (sender, receiver) = unbounded_channel();
@@ -54,18 +55,19 @@ where
 {
    
     pub fn run(self, service: S) -> Address<S> {
-        let mut this = self;
+        let mut this = self;  // 将 Context 实例移动到闭包中
 
-        let address = this.addr();
+        let address = this.addr(); // 创建并返回 actor 的地址
 
-        let mut service = service;
+        let mut service = service;  // 将服务实例移动到闭包中
 
         tokio::spawn(async move {
-            service.started(&mut this).await;
-            while let Some(mut e) = this.receiver.recv().await {
-                e.handle(&mut service, &mut this).await;
+            service.started(&mut this).await; // 在开始处理消息前，调用服务的 started 生命周期方法
+
+            while let Some(mut e) = this.receiver.recv().await { // 循环接收消息
+                e.handle(&mut service, &mut this).await;  // 处理事务
             }
-            service.stopped(&mut this).await;
+            service.stopped(&mut this).await;  // 当消息接收结束时，调用服务的 stopped 生命周期方法
         });
 
         address
