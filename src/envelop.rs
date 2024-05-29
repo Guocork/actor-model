@@ -30,7 +30,7 @@ where
     S: Send,
 {
     async fn handle(&mut self, svc: &mut S, ctx: &mut Context<S>) {
-        let r = &mut self.0;
+        let r = &mut self.0;  // 将要执行的内容从Envelope 中拿出来
 
         r.handle(svc, ctx).await
     }
@@ -38,7 +38,7 @@ where
 
 #[async_trait]
 pub(crate) trait EnvelopProxy<S> {
-    async fn handle(&mut self, svc: &mut S, ctx: &mut Context<S>);
+    async fn handle(&mut self, svc: &mut S, ctx: &mut Context<S>);  // 异步函数，用于执行消息处理逻辑。
 }
 
 pub(crate) struct EnvelopWithMessage<M>
@@ -57,10 +57,13 @@ where
     M::Result: Send,
 {
     async fn handle(&mut self, svc: &mut S, ctx: &mut Context<S>) {
+
         let message = self.message.take();
+
         let result_channel = self.result_channel.take();
 
         if let (Some(message), Some(mut rc)) = (message, result_channel) {
+            // 这里来处理逻辑
             let res = <S as Handler<M>>::handler(svc, message, ctx).await;
 
             if ctx.paused {
